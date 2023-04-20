@@ -1,19 +1,11 @@
-import { procedure, router } from '../../trpc';
+import { procedure, createTRCPRouter } from '../../api/trpc';
+import { prisma } from '../../db';
 
-interface Post {
-  name: string,
-  content: string,
-}
-
-const postsDB: Post[] = [
-  {
-    name: "Bob",
-    content: "Testing posts"
-  }
-]
-
-export const postRouter = router({
-  getAllPosts: procedure.query((req) => {
-    return postsDB
+export const postRouter = createTRCPRouter({
+  getAllPosts: procedure.query(async ({ ctx }) => {
+    const posts = await ctx.prisma.post.findMany({
+      take: 100,
+    })
+    return posts
   })
 })
